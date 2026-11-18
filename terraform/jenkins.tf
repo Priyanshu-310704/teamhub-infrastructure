@@ -80,7 +80,10 @@ resource "aws_instance" "jenkins" {
     encrypted             = true
     delete_on_termination = true
   }
-
+  metadata_options {
+    http_endpoint = "enabled"
+    http_tokens   = "required"
+  }
   user_data = <<-EOF
     #!/bin/bash
     dnf update -y

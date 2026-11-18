@@ -25,6 +25,12 @@ resource "aws_instance" "app" {
 
   associate_public_ip_address = false
 
+  # Enforce IMDSv2
+  metadata_options {
+    http_endpoint = "enabled"
+    http_tokens   = "required"
+  }
+
   user_data = <<-EOF
     #!/bin/bash
     dnf update -y
