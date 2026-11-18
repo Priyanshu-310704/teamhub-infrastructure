@@ -1,9 +1,10 @@
 
 # Application Load Balancer
 resource "aws_lb" "main" {
-  name               = "${var.project_name}-alb"
-  internal           = false
-  load_balancer_type = "application"
+  name                       = "${var.project_name}-alb"
+  internal                   = false
+  load_balancer_type         = "application"
+  drop_invalid_header_fields = true
 
   security_groups = [aws_security_group.alb.id]
   subnets         = aws_subnet.public[*].id
@@ -14,6 +15,7 @@ resource "aws_lb" "main" {
     Name = "${var.project_name}-alb"
   })
 }
+
 
 # Frontend Target Group
 resource "aws_lb_target_group" "frontend" {

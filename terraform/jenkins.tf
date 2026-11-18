@@ -24,7 +24,6 @@ resource "aws_security_group" "jenkins" {
   })
 }
 
-
 # ==========================================
 # 2. JENKINS IAM ROLE
 # ==========================================
@@ -46,13 +45,11 @@ resource "aws_iam_role" "jenkins_role" {
   tags = local.common_tags
 }
 
-
 # Allow Jenkins EC2 to communicate with AWS Systems Manager
 resource "aws_iam_role_policy_attachment" "jenkins_ssm" {
   role       = aws_iam_role.jenkins_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
-
 
 # Attach IAM role to EC2 through an instance profile
 resource "aws_iam_instance_profile" "jenkins_profile" {
@@ -60,13 +57,12 @@ resource "aws_iam_instance_profile" "jenkins_profile" {
   role = aws_iam_role.jenkins_role.name
 }
 
-
 # ==========================================
 # 3. JENKINS EC2 INSTANCE
 # ==========================================
 
 resource "aws_instance" "jenkins" {
-  ami                    = data.aws_ami.amazon_linux.id
+  ami                    = "ami-023dad608d2a5e5b8"
   instance_type          = "t3.small"
   subnet_id              = aws_subnet.app[1].id
   vpc_security_group_ids = [aws_security_group.jenkins.id]
@@ -80,10 +76,14 @@ resource "aws_instance" "jenkins" {
     encrypted             = true
     delete_on_termination = true
   }
+
+  # Enforce IMDSv2
   metadata_options {
-    http_endpoint = "enabled"
-    http_tokens   = "required"
+    http_endpoint               = "enabled"
+    http_tokens                 = "required"
+    http_put_response_hop_limit = 2
   }
+
   user_data = <<-EOF
     #!/bin/bash
     dnf update -y

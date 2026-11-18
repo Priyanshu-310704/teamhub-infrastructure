@@ -23,7 +23,8 @@ output "ec2_private_ip" {
 }
 
 output "ec2_ami_id" {
-  value = data.aws_ami.amazon_linux.id
+  description = "AMI ID used by the application EC2 instance"
+  value       = aws_instance.app.ami
 }
 
 

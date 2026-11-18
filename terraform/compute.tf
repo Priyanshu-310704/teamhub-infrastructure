@@ -1,23 +1,7 @@
 
-# Get the latest Amazon Linux 2023 AMI
-data "aws_ami" "amazon_linux" {
-  most_recent = true
-  owners      = ["amazon"]
-
-  filter {
-    name   = "name"
-    values = ["al2023-ami-2023.*-x86_64"]
-  }
-
-  filter {
-    name   = "architecture"
-    values = ["x86_64"]
-  }
-}
-
 # TeamHub EC2 instance
 resource "aws_instance" "app" {
-  ami                    = data.aws_ami.amazon_linux.id
+  ami                    = "ami-023dad608d2a5e5b8"
   instance_type          = "t3.small"
   subnet_id              = aws_subnet.app[0].id
   vpc_security_group_ids = [aws_security_group.app.id]
@@ -27,8 +11,9 @@ resource "aws_instance" "app" {
 
   # Enforce IMDSv2
   metadata_options {
-    http_endpoint = "enabled"
-    http_tokens   = "required"
+    http_endpoint               = "enabled"
+    http_tokens                 = "required"
+    http_put_response_hop_limit = 2
   }
 
   user_data = <<-EOF
