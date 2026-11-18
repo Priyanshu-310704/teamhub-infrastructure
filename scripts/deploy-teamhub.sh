@@ -23,6 +23,11 @@ test -f "$ENV_FILE"
 OLD_FRONTEND=$(docker inspect -f '{{.Image}}' "$FRONTEND_CONTAINER")
 OLD_BACKEND=$(docker inspect -f '{{.Image}}' "$BACKEND_CONTAINER")
 
+aws ecr get-login-password --region "$AWS_REGION" \
+    | docker login \
+        --username AWS \
+        --password-stdin "$REGISTRY"
+
 # Download both images before touching the running application.
 docker pull "$FRONTEND_IMAGE"
 docker pull "$BACKEND_IMAGE"
